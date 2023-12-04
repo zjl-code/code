@@ -1,0 +1,24 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/zhang/hacola/03export/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+KERNEL_PATH	Makefile	/^KERNEL_PATH=\/opt\/kernel\/phytium-linux-kernel$/;"	m
+__EXPORT_H__	export.h	/^#define __EXPORT_H__$/;"	d
+____versions	export.mod.c	/^static const struct modversion_info ____versions[]$/;"	v	typeref:typename:const struct modversion_info[]__used	file:
+____versions	import.mod.c	/^static const struct modversion_info ____versions[]$/;"	v	typeref:typename:const struct modversion_info[]__used	file:
+__module_depends	export.mod.c	/^static const char __module_depends[]$/;"	v	typeref:typename:const char[]__used	file:
+__module_depends	import.mod.c	/^static const char __module_depends[]$/;"	v	typeref:typename:const char[]__used	file:
+__this_module	export.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+__this_module	import.mod.c	/^__visible struct module __this_module$/;"	v	typeref:struct:module
+add	export.c	/^int add (int x, int y)$/;"	f	typeref:typename:int
+all	Makefile	/^all:$/;"	t
+clean	Makefile	/^clean:$/;"	t
+import_exit	import.c	/^void __exit import_exit (void)$/;"	f	typeref:typename:void __exit
+import_init	import.c	/^int __init import_init (void)$/;"	f	typeref:typename:int __init

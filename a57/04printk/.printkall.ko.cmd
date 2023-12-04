@@ -1,0 +1,1 @@
+cmd_/home/zhang/04printk/printkall.ko := aarch64-none-linux-gnu-ld -r -EL  -maarch64elf -T ./scripts/module-common.lds -T ./arch/arm64/kernel/module.lds  --build-id  -o /home/zhang/04printk/printkall.ko /home/zhang/04printk/printkall.o /home/zhang/04printk/printkall.mod.o ;  true

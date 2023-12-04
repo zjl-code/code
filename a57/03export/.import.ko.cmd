@@ -1,0 +1,1 @@
+cmd_/home/zhang/hacola/03export/import.ko := aarch64-none-linux-gnu-ld -r -EL  -maarch64elf -T ./scripts/module-common.lds -T ./arch/arm64/kernel/module.lds  --build-id  -o /home/zhang/hacola/03export/import.ko /home/zhang/hacola/03export/import.o /home/zhang/hacola/03export/import.mod.o ;  true
