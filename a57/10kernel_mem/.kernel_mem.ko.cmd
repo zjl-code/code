@@ -1,0 +1,1 @@
+cmd_/home/zhang/code/a57/10kernel_mem/kernel_mem.ko := aarch64-none-linux-gnu-ld -r -EL  -maarch64elf -T ./scripts/module-common.lds -T ./arch/arm64/kernel/module.lds  --build-id  -o /home/zhang/code/a57/10kernel_mem/kernel_mem.ko /home/zhang/code/a57/10kernel_mem/kernel_mem.o /home/zhang/code/a57/10kernel_mem/kernel_mem.mod.o ;  true

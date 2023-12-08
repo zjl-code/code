@@ -8,8 +8,8 @@ MODULE_LICENSE ("GPL");
 struct cdev led_cdev;
 
 dev_t dev;//保存设备号
-unsigned int major = 0;
-unsigned int minor = 10;
+unsigned int major = 0;//主设备号
+unsigned int minor = 10;//次设备号
 int led_open (struct inode *inode, struct file *filp )
 {
     printk (KERN_ERR "enter:%s\n", __func__);
@@ -20,7 +20,7 @@ int led_close (struct inode *inode, struct file *filp )
     printk (KERN_ERR "enter:%s\n", __func__);
     return 0;
 }
-struct file_operations led_fops = 
+struct file_operations led_fops = //定义了file_operations结构体类型的对象led_fops
 {
     .owner = THIS_MODULE,
     .open = led_open,
@@ -37,13 +37,13 @@ int __init led_drv_init (void)
     }
     else
     {   
-        //动态注册
+        //动态注册，分配一个为被使用的设备号
         alloc_chrdev_region (&dev, 100, 1, "leds");
         major = MAJOR (dev);
         minor = MINOR (dev);
         printk (KERN_ERR "major = %d\n,minor = %d\n",major, minor);
     }
-    //初始化
+    //初始化cdev结构体对象
     cdev_init (&led_cdev, &led_fops);
     //注册cdev到内核
     cdev_add (&led_cdev, dev, 1);
