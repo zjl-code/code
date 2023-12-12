@@ -1,13 +1,8 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/fs.h>
-#include <linux/cdev.h>
 #include <linux/acpi.h>
-#include <asm/uaccess.h>
 #include <linux/kernel.h>
-#include <asm/io.h>
-#include <linux/fs.h>
-#include <linux/io.h>
 MODULE_LICENSE ("GPL");
 
 #define X0_REG 0x32b3015c
@@ -23,7 +18,13 @@ unsigned int minor = 10;//次设备号
  //配置GPIO5_0为输出模式
  int led_open (struct inode *inode, struct file *filp )
 {
-    printk (KERN_ERR "enter:%s\n", __func__);
+    void __iomem *vaddr;
+    //配置GPIO管脚模式
+    vaddr = ioremap(X0_REG, 8);
+    writel (0x246, vaddr);
+    //gpio5_0输出模式
+   vaddr = ioremap (GPIO_DDR, 8);
+   writel (0x00000001 | readl (vaddr),vaddr);
     return 0;
 }
 int led_close (struct inode *inode, struct file *filp )
@@ -31,16 +32,46 @@ int led_close (struct inode *inode, struct file *filp )
     printk (KERN_ERR "enter:%s\n", __func__);
     return 0;
 }
+ssize_t led_read (struct file *filp,char __user *buf, size_t count, loff_t *ppos)
+{
+    void __iomem *vaddr;
+    char val = 255;
+    int ret = 0;
+    vaddr =  ioremap (GPIO_DR, 8);
+    val = readb (vaddr) & 0x01;//读一个字节
+    //从内核态到用户态，从val拷贝到buf中
+    ret = copy_to_user (buf, &val, sizeof (val));
+    return (ssize_t) ((ret == 0) ? count : -1);
+}
+ssize_t led_write (struct file *filp,const char __user *buf, size_t count, loff_t *ppos)
+{
+    char val = 255;
+    int ret = 0;
+    void __iomem* vaddr;
+    //从用户态到内核态,从buf中拷贝到val
+    ret = copy_from_user(&val, buf, count);
+    vaddr = ioremap (GPIO_DR, 4);
+    if (val &0xc1)
+    {
+        writel (readl (vaddr) | 0x01, vaddr);
+    }
+    else
+    {
+        writel (readl (vaddr) & 0xfffffffe, vaddr);
+    }
+    return (ssize_t) ((ret == 0)?count:-1);
+
+}
 static struct file_operations led_fops = //定义了file_operations结构体类型的对象led_fops
 {
     .owner = THIS_MODULE,//在本模块生效
     .open = led_open,
     .release = led_close, 
+    .read = led_read,
+    .write = led_write,
 };
 int __init led_drv_init (void)
 {   
-    void __iomem *vaddr;
-
     //注册设备
     major = register_chrdev (0, "dev_led", &led_fops);
     //设备文件的自动创建
@@ -48,34 +79,17 @@ int __init led_drv_init (void)
     led_class = class_create (THIS_MODULE, "uleds");
     //创建设备树的果实
     device_create (led_class, NULL, MKDEV(major, 0), NULL, "led_gpio5_0");
-    //配置GPIO管脚模式
-    vaddr = ioremap(X0_REG, 8);
-    writel (0x246, vaddr);
-
-    //gpio5_0输出模式
-   vaddr = ioremap (GPIO_DDR, 8);
-   writel (0x00000001 | readl (vaddr),vaddr);//输出高电平
-    //开灯
-    vaddr = ioremap(GPIO_DR, 4);
-    writel (readl(vaddr)| 0x00000001, vaddr);
-
     return 0;
 }
 void __exit led_drv_exit (void)
 {
-    void __iomem *vaddr;
-    vaddr = ioremap (GPIO_DR, 4);
-        //关灯输出低电平
-    writel (0xfffffffe & readl (vaddr),vaddr);
-    //注销设备文件
+        //注销设备文件
     device_destroy (led_class, MKDEV (major, 0));
     //注销设备类
     class_destroy (led_class);
     //注销设备号
     unregister_chrdev (major, "dev_led");
-
-    iounmap (vaddr);
-     return ;
+         return ;
 }
 module_init (led_drv_init);
 module_exit (led_drv_exit);

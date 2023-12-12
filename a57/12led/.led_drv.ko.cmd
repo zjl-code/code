@@ -1,0 +1,1 @@
+cmd_/home/zhang/code/a57/12led/led_drv.ko := aarch64-none-linux-gnu-ld -r -EL  -maarch64elf -T ./scripts/module-common.lds -T ./arch/arm64/kernel/module.lds  --build-id  -o /home/zhang/code/a57/12led/led_drv.ko /home/zhang/code/a57/12led/led_drv.o /home/zhang/code/a57/12led/led_drv.mod.o ;  true

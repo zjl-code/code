@@ -1,0 +1,1 @@
+cmd_/home/zhang/code/a57/13led/led_drv_on.ko := aarch64-none-linux-gnu-ld -r -EL  -maarch64elf -T ./scripts/module-common.lds -T ./arch/arm64/kernel/module.lds  --build-id  -o /home/zhang/code/a57/13led/led_drv_on.ko /home/zhang/code/a57/13led/led_drv_on.o /home/zhang/code/a57/13led/led_drv_on.mod.o ;  true
