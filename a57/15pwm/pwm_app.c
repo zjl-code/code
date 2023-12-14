@@ -25,7 +25,7 @@
 #define WRITE_TYPE_H  "h"//半字 2个字节
 #define WRITE_TYPE_B  "b"
 #define WRITE_TYPE_W  "w"//字   4个字节
-#define PWM_PERIOD    "1000000000"
+#define PWM_PERIOD    "1000000"
 #define PWM_DUTY1     "0"
 #define PWM_DUTY2     "1000000"
 enum PWMX
@@ -129,9 +129,9 @@ int main (int argc, char **argv)
     gpio_mode (GPIO_PAD_MODE_PWM2_REG, (char *)WRITE_TYPE_H, GPIO_PAD_MODE_PWM2_VAL);
     //将pwm0 pwm2的路径导出到pwm0/pwm2下
     sprintf (pwm0_path, "/sys/class/pwm/pwmchip%s/pwm%s", PWM0_CONTROLLER, PWM0_CHANNEL0);
-    sprintf (pwm2_path, "/sys/class/pwm/pwmchip%s/pwm%s", PWM2_CONTROLLER, PWM2_CHANNEL0);
+    sprintf (pwm2_path, "/sys/class/pwm/pwmchip%s/pwm%s", PWM2_CONTROLLER, PWM2_CHANNEL0);//
     //判断有没有访问权限
-    if (access(pwm0_path, F_OK))//有访问权限返回1
+    if (access(pwm0_path, F_OK))//有访问权限返回0
     {
         if(fd = open ("/sys/class/pwm/pwmchip0/export", O_WRONLY) <0)
         {
@@ -140,7 +140,7 @@ int main (int argc, char **argv)
             exit (-1);
         }
         len = strlen (PWM0_CHANNEL0);
-        if (len!=write (fd, PWM0_CHANNEL0, len))
+        if (len!=write (fd, PWM0_CHANNEL0, len))//创建具体的pwm0设备文件
         {
 
             perror ("write failed\n");
@@ -158,7 +158,7 @@ int main (int argc, char **argv)
             exit (-1);
         }
         len = strlen (PWM2_CHANNEL0);
-        if (len!=write (fd, PWM2_CHANNEL0, len))
+        if (len!=write (fd, PWM2_CHANNEL0, len))//创建具体的pwm2设备文件
         {
             perror ("write failed\n");
             close (fd);
@@ -168,13 +168,13 @@ int main (int argc, char **argv)
     }
 //如果可以正常导出，可以调节占空比
 //配置pwm0,pwm2的持续周期为1s
-    if (pwm_config ("period", PWM_PERIOD, 0) <0)
+    if (pwm_config ("period", PWM_PERIOD, 0) <0)//设置周期
     {
         perror ( "config pwm0 duty1 attribute failed\n");
         exit(-1);
     }
     //初始化占空比为0
-    if (pwm_config ("duty_cycle", PWM_DUTY1, 0)<0)
+    if (pwm_config ("duty_cycle", PWM_DUTY1, 0)<0)//初始化为低电平
     {
         fprintf (stderr, "coonfig pwm0 duty failed\n");
         exit (-1);
@@ -203,13 +203,13 @@ int main (int argc, char **argv)
         fprintf (stderr, "coonfig pwm1 enable failed\n");
         exit (-1);
     }
-    int step;
+    int step;//步长
     char increase = 1;
     char dutys[128];
-    unsigned int duty1 = atoi (PWM_DUTY1);
-    unsigned int duty2 = atoi (PWM_DUTY2);
+    unsigned int duty1 = atoi (PWM_DUTY1);//0
+    unsigned int duty2 = atoi (PWM_DUTY2);//1000000
     unsigned int duty = duty1;
-    step = (int)((duty2 - duty1)/100);
+    step = (int)((duty2 - duty1)/100);//步长=10000
     printf ("duty1= %d  duty2= %d  step= %d\n", duty1, duty2, step);
     while (1)
     {
@@ -231,7 +231,7 @@ int main (int argc, char **argv)
                 fprintf (stderr, "config pwm duty error\n");
                 exit (-1);
             }
-            if (pwm_config ("duty_cycle", dutys, 0) <0)
+            if (pwm_config ("duty_cycle", dutys, 0) <0)//pwm1 dutys变化--->占空比
             {
                 fprintf (stderr, "config pwm duty error\n");
                 exit (-1);
@@ -239,12 +239,12 @@ int main (int argc, char **argv)
         }
         else  if (pwmx == PWM2)
         {
-            if (pwm_config ("duty_cycle", PWM_DUTY2, 0)<0)
+            if (pwm_config ("duty_cycle", PWM_DUTY2, 0)<0)//pwm0占空比调到最大
             {
                 fprintf (stderr, "config pwm duty error\n");
                 exit (-1);
             }
-            if (pwm_config ("duty_cycle", dutys, 1) <0)
+            if (pwm_config ("duty_cycle", dutys, 1) <0)//pwm2占空比变化
             {
                 fprintf (stderr, "config pwm duty error\n");
                 exit (-1);

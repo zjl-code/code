@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
     char buff[256];
     struct pollfd fds[1];//poll监听
     //参数判断
-    close (gpio_fd);
+    //close (gpio_fd);
     if ((argc!=3) || (atoi(argv[1])!=4) || ((atoi(argv[2])!=1&&atoi(argv[2])!=3)))
     {
         printf ("usage :./key_app <gpio group> <gpio_num>\n");
@@ -38,11 +38,11 @@ int main (int argc, char *argv[])
     }
     //gpio管脚的初始化
     gpio_init ();
-    gpios.group = atoi(argv[1]);
-    gpios.num[0] = atoi(argv[2]);
-    sprintf (gpio_num," %d",  gpio_get (gpios));
-    sprintf (pptr, "/sys/class/gpio/gpio%s\n", gpio_num);//pptr存放？
-    if (access (pptr, F_OK))//检查用户对文件是否有权限，成功返回0,失败返回-1
+    gpios.group = atoi(argv[1]);//按键所对应的gpio的组号
+    gpios.num[0] = atoi(argv[2]);//所对应gpio组里的gpio管脚编号
+    sprintf (gpio_num," %d",  gpio_get (gpios));//将gpios中的编号存放到gpio_num中
+    sprintf (pptr, "/sys/class/gpio/gpio%s\n", gpio_num);//将路径存放到pptr
+    if (access (pptr, F_OK))//检查用户对文件是否有权限，文件是否存在，成功返回0,失败返回-1
     {
         //访问设备文件      读写设备文件
         //配置中断处理方式
@@ -53,13 +53,14 @@ int main (int argc, char *argv[])
         }
         //导出文件
         len = strlen (gpio_num);//组号和管脚号的整合
-        if (len != write (fd, gpio_num, len))
+        if (len != write (fd, gpio_num, len))//得到gpio编号对应的设备文件eg:gpio428
         {
             perror ("write error\n");
             close (fd);
             exit (-1);
         }
     }
+        //操作具体设备文件的属性文件
         //配置中断的触发方式--->双沿
         if (gpio_write (pptr, "edge", "both"))
         {
@@ -75,7 +76,7 @@ int main (int argc, char *argv[])
         }
         //打开设备文件,监听文件描述符
         memset (buff, 0, sizeof(buff)/sizeof(buff[0]));
-        sprintf (buff, "%s%s", pptr, "value");//将路径和键值保存到buff中？
+        sprintf (buff, "%s%s", pptr, "value");//将具体gpio设备文件下的value属性文件路径写到buff中
         gpio_fd = open (buff, O_RDONLY);
         if (gpio_fd == -1)
         {
@@ -84,8 +85,8 @@ int main (int argc, char *argv[])
             exit (-1);
         }
         fds[0].fd = gpio_fd;//fds是结构体polled的实例化对象，fd是其中的成员
-        fds[0].events = POLLPRI;
-        int ret = read (gpio_fd, buff, 10);
+        fds[0].events = POLLPRI;//表示等待高优先级可读
+        int ret = read (gpio_fd, buff, 10);//从gpio_fd中读到buff中
         if (ret == -1)
         {
             perror ("gpio read error\n");
@@ -100,7 +101,7 @@ int main (int argc, char *argv[])
             {
                 perror ("poll error");
             }
-            if (fds[0].revents &POLLPRI)
+            if (fds[0].revents &POLLPRI)//结果不为0说明发生了POLLPRI事件--->中断发生
             {
                 ret = lseek (gpio_fd, 0, SEEK_SET);
                 if (ret == -1)
