@@ -18,6 +18,7 @@ struct msg_channel_st
 struct msg_listentry_st//存放描述信息
 {
     chnid_t chnid;//频道号
+    uint16_t len;
     uint8_t desc[1];//变长
 }__attribute__((pached));
 struct msg_list_st

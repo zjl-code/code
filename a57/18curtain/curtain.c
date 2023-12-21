@@ -283,7 +283,7 @@ int main (int argc, char **argv)
     int echo_fd;
     //init
     gpio_init ();
-    //电机--->输出  
+    //配置电机--->输出  
     step_moter_set ();
 
     //超声波4_4out  trig    4_5in  echo

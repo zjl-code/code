@@ -75,7 +75,7 @@ static int SRF05_if_set (struct gpio_desc gpios, enum SRF05_IO type )
     sprintf (pptr, "/sys/class/gpio/gpio%s", gpio_num);
     if (access (pptr, F_OK))
     {   
-        if (0>(open ("/sys/class/gpio/export", O_WRONLY)))
+        if (0>(fd = open ("/sys/class/gpio/export", O_WRONLY)))
         {
         perror ("open failed \n");
         return  -1;
@@ -212,7 +212,7 @@ static int SRF05_open_echo (struct gpio_desc gpios)
     echo_fd = open (fp, O_RDONLY);
     return echo_fd;
 }
-static int SRG05_get_distance (int echo_fd)
+static int SRF05_get_distance (int echo_fd)
 {
     char buf[128];
     struct pollfd fds[1];//定义一个struct polled对象
