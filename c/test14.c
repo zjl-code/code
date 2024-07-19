@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
-
+//字符串中数字、字母、空格、其他字符的个数
 int main()
 {
 	char a[32];
